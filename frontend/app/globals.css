@@ -14,9 +14,45 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
   }
+}
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+
+}
+
+.tooltip-text {
+  position: absolute;
+  transform: translate(-50%, -110%);
+  background-color: #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tooltip-text.visible {
+  opacity: 1;
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Place the caret at the bottom edge of the tooltip */
+  left: 50%;
+  margin-left: -5px; /* Center the caret (half of its width) */
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent; /* Creates a downward-pointing triangle */
 }
 
 body {
