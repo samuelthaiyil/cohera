@@ -33,7 +33,7 @@ export const useWebSocket = (url: string) => {
   }, [url]);
 
   const sendMessage = useCallback((data: object) => {
-    if (!ws.current) throw "WebSocket is not connected";
+    if (!ws.current) return;
 
     if (ws.current.readyState === 1) {
       ws.current.send(JSON.stringify(data));

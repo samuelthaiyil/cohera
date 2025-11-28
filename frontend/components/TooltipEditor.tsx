@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from "react";
 
 export type CursorPosition = {
@@ -32,6 +33,12 @@ type TooltipEditorProps = {
   }) => void;
 };
 
+type TextEffects = {
+  bold: boolean;
+  italicize: boolean;
+  underline: boolean;
+};
+
 const TooltipEditor = ({
   clients,
   value,
@@ -42,6 +49,11 @@ const TooltipEditor = ({
   broadcastPosition,
 }: TooltipEditorProps) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [textEffects, setTextEffects] = useState<TextEffects>({
+    bold: false,
+    italicize: false,
+    underline: false,
+  });
 
   const getCaretCoordinates = useCallback((textarea: HTMLTextAreaElement) => {
     const selectionStart = textarea.selectionStart ?? 0;
@@ -110,6 +122,15 @@ const TooltipEditor = ({
     updateTooltipPosition();
   }, [updateTooltipPosition, value]);
 
+  const handleSetTextEffect = (type: "bold" | "italicize" | "underline") => {
+    setTextEffects((prev) => {
+      return {
+        ...prev,
+        [type]: !prev[type]
+      };
+    });
+  };
+
   return (
     <div className="tooltip-wrapper">
       {clients.map((client) => (
@@ -117,9 +138,35 @@ const TooltipEditor = ({
           key={client.id}
           hasKeyDownTimeoutReached={hasKeyDownTimeoutReached}
           position={client.position}
-          name="You"
+          name={`User ${client.id}`}
         />
       ))}
+      <div className="rounded-md shadow-md p-4 flex flex-row space-x-3 mb-4">
+        <button
+          className={`hover:cursor-pointer font-semibold rounded-md shadow-md px-3 py-1 transition-colors duration-200 ${
+            textEffects["bold"] ? "text-blue-500" : "text-black"
+          }`}
+          onClick={() => handleSetTextEffect("bold")}
+        >
+          B
+        </button>
+        <button
+          className={`hover:cursor-pointer italic rounded-md shadow-md px-3 py-1 transition-colors duration-200 ${
+            textEffects["italicize"] ? "text-blue-500" : "text-black"
+          }`}
+          onClick={() => handleSetTextEffect("italicize")}
+        >
+          I
+        </button>
+        <button
+          className={`hover:cursor-pointer underline rounded-md shadow-md px-3 py-1 transition-colors duration-200 ${
+            textEffects["underline"] ? "text-blue-500" : "text-black"
+          }`}
+          onClick={() => handleSetTextEffect("underline")}
+        >
+          U
+        </button>
+      </div>
       <textarea
         ref={textareaRef}
         className="p-8 focus:outline-none border border-gray-200 shadow-md resize-none rounded-md"
@@ -160,4 +207,3 @@ const Cursor = ({ name, position, hasKeyDownTimeoutReached }: CursorProps) => (
 );
 
 export default TooltipEditor;
-
