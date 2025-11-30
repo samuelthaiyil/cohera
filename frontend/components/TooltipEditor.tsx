@@ -9,38 +9,21 @@ import {
   useRef,
   useState,
 } from "react";
-
-export type CursorPosition = {
-  top: number;
-  left: number;
-};
-
-export type Client = {
-  id: number;
-  position: CursorPosition;
-};
+import { ClientCursorPosition } from "@/types/cursor";
+import { TextEffects } from "@/types/editor";
+import Cursor from "./Cursor";
 
 type TooltipEditorProps = {
-  clients: Client[];
+  clientCursorPositions: ClientCursorPosition[];
   value: string;
   onValueChange: Dispatch<SetStateAction<string>>;
   hasKeyDownTimeoutReached: boolean;
   updateLastKeyPress: () => void;
-  broadcastPosition: (payload: {
-    top: number;
-    left: number;
-    clientId: string;
-  }) => void;
-};
-
-type TextEffects = {
-  bold: boolean;
-  italicize: boolean;
-  underline: boolean;
+  broadcastPosition: (payload: ClientCursorPosition) => void;
 };
 
 const TooltipEditor = ({
-  clients,
+  clientCursorPositions,
   value,
   onValueChange,
   hasKeyDownTimeoutReached,
@@ -111,10 +94,14 @@ const TooltipEditor = ({
     if (!textarea) return;
 
     const caret = getCaretCoordinates(textarea);
+ 
     broadcastPosition({
-      top: textarea.offsetTop + caret.top,
-      left: textarea.offsetLeft + caret.left,
-      clientId: user?.id || "",
+      position: {
+        top: textarea.offsetTop + caret.top,
+        left: textarea.offsetLeft + caret.left,
+      },
+      id: user?.id || "",
+      username: user?.username || "",
     });
   }, [broadcastPosition, getCaretCoordinates]);
 
@@ -133,12 +120,12 @@ const TooltipEditor = ({
 
   return (
     <div className="tooltip-wrapper">
-      {clients.map((client) => (
+      {clientCursorPositions.map((client) => (
         <Cursor
           key={client.id}
           hasKeyDownTimeoutReached={hasKeyDownTimeoutReached}
           position={client.position}
-          name={`${client.id}`}
+          name={`${client.username}`}
         />
       ))}
       <div className="rounded-md shadow-md p-4 flex flex-row space-x-3 mb-4">
@@ -187,23 +174,5 @@ const TooltipEditor = ({
     </div>
   );
 };
-
-type CursorProps = {
-  name: string;
-  position: CursorPosition;
-  hasKeyDownTimeoutReached: boolean;
-};
-
-const Cursor = ({ name, position, hasKeyDownTimeoutReached }: CursorProps) => (
-  <span
-    className={`tooltip-text ${!hasKeyDownTimeoutReached ? "visible" : ""}`}
-    style={{
-      top: position.top,
-      left: position.left,
-    }}
-  >
-    {name}
-  </span>
-);
 
 export default TooltipEditor;
