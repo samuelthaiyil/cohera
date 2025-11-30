@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import {
   Dispatch,
   SetStateAction,
@@ -25,11 +26,10 @@ type TooltipEditorProps = {
   onValueChange: Dispatch<SetStateAction<string>>;
   hasKeyDownTimeoutReached: boolean;
   updateLastKeyPress: () => void;
-  tabNumber: number | null;
   broadcastPosition: (payload: {
     top: number;
     left: number;
-    clientId: number;
+    clientId: string;
   }) => void;
 };
 
@@ -45,7 +45,6 @@ const TooltipEditor = ({
   onValueChange,
   hasKeyDownTimeoutReached,
   updateLastKeyPress,
-  tabNumber,
   broadcastPosition,
 }: TooltipEditorProps) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -54,6 +53,7 @@ const TooltipEditor = ({
     italicize: false,
     underline: false,
   });
+  const { user } = useUser();
 
   const getCaretCoordinates = useCallback((textarea: HTMLTextAreaElement) => {
     const selectionStart = textarea.selectionStart ?? 0;
@@ -114,9 +114,9 @@ const TooltipEditor = ({
     broadcastPosition({
       top: textarea.offsetTop + caret.top,
       left: textarea.offsetLeft + caret.left,
-      clientId: (tabNumber ?? 0) + 1,
+      clientId: user?.id || "",
     });
-  }, [broadcastPosition, getCaretCoordinates, tabNumber]);
+  }, [broadcastPosition, getCaretCoordinates]);
 
   useEffect(() => {
     updateTooltipPosition();
@@ -138,7 +138,7 @@ const TooltipEditor = ({
           key={client.id}
           hasKeyDownTimeoutReached={hasKeyDownTimeoutReached}
           position={client.position}
-          name={`User ${client.id}`}
+          name={`${client.id}`}
         />
       ))}
       <div className="rounded-md shadow-md p-4 flex flex-row space-x-3 mb-4">

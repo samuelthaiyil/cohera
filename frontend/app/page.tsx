@@ -3,34 +3,19 @@
 import TooltipEditor, { Client } from "@/components/TooltipEditor";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useWebSocket } from "@/hooks/useWebsocket";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const { hasTimeoutReached, updateLastKeyPress } = useDebounce(1000);
   const [value, setValue] = useState("");
-  const [tabNumber, setTabNumber] = useState<number | null>(null);
   const { isConnected, messages, sendMessage } = useWebSocket(
     "ws://localhost:3001"
   );
   const [clients, setClients] = useState<Client[]>([]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const TAB_ID_KEY = "cohera-tab-id";
-    const TAB_COUNTER_KEY = "cohera-tab-counter";
-
-    let storedTabNumber = sessionStorage.getItem(TAB_ID_KEY);
-
-    if (!storedTabNumber) {
-      const nextId = Number(localStorage.getItem(TAB_COUNTER_KEY) ?? "0") + 1;
-      localStorage.setItem(TAB_COUNTER_KEY, String(nextId));
-      sessionStorage.setItem(TAB_ID_KEY, String(nextId - 1));
-      storedTabNumber = String(nextId - 1);
-    }
-
-    setTabNumber(Number(storedTabNumber));
-  }, []);
+  const { isSignedIn, user } = useUser();
+  const router  = useRouter();
 
   useEffect(() => {
     const updateClients = (): void => {
@@ -74,6 +59,10 @@ export default function Home() {
     updateClients();
   }, [messages]);
 
+  if (!isSignedIn) {
+    router.push('/signin');
+  }
+
   return (
     <div className="p-8 flex justify-center">
       <TooltipEditor
@@ -82,7 +71,6 @@ export default function Home() {
         onValueChange={setValue}
         hasKeyDownTimeoutReached={hasTimeoutReached}
         updateLastKeyPress={updateLastKeyPress}
-        tabNumber={tabNumber}
         broadcastPosition={sendMessage}
       />
     </div>
