@@ -4,9 +4,10 @@ import TooltipEditor from "@/components/TooltipEditor";
 import { ClientCursorPosition } from "@/types/cursor";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useWebSocket } from "@/hooks/useWebsocket";
-import { useUser } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Sidebar } from "@/components/Sidebar";
 
 export default function Home() {
   const { hasTimeoutReached, updateLastKeyPress } = useDebounce(1000);
@@ -65,15 +66,17 @@ export default function Home() {
   }
 
   return (
-    <div className="p-8 flex justify-center">
-      <TooltipEditor
-        clientCursorPositions={clientCursorPositions}
-        value={value}
-        onValueChange={setValue}
-        hasKeyDownTimeoutReached={hasTimeoutReached}
-        updateLastKeyPress={updateLastKeyPress}
-        broadcastPosition={sendMessage}
-      />
-    </div>
+    <>
+      <div className="p-8 flex justify-center">
+        <TooltipEditor
+          clientCursorPositions={clientCursorPositions}
+          value={value}
+          onValueChange={setValue}
+          hasKeyDownTimeoutReached={hasTimeoutReached}
+          updateLastKeyPress={updateLastKeyPress}
+          broadcastPosition={sendMessage}
+        />
+      </div>
+    </>
   );
 }
