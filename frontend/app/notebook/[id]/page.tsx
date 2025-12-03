@@ -4,10 +4,8 @@ import TooltipEditor from "@/components/TooltipEditor";
 import { ClientCursorPosition } from "@/types/cursor";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useWebSocket } from "@/hooks/useWebsocket";
-import { SignOutButton, useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sidebar } from "@/components/Sidebar";
+
 
 export default function Home() {
   const { hasTimeoutReached, updateLastKeyPress } = useDebounce(1000);
@@ -18,10 +16,12 @@ export default function Home() {
   const [clientCursorPositions, setClientCursorPositions] = useState<
     ClientCursorPosition[]
   >([]);
-  const { isSignedIn } = useUser();
-  const router = useRouter();
 
   useEffect(() => {
+    if (!isConnected) {
+      return;
+    }
+
     if (!messages[0]) {
       return;
     }
@@ -61,10 +61,6 @@ export default function Home() {
       : addClientCursorPosition(latestMessage);
   }, [messages]);
 
-  if (!isSignedIn) {
-    router.push("/signin");
-  }
-
   return (
     <>
       <div className="p-8 flex justify-center">
@@ -80,3 +76,4 @@ export default function Home() {
     </>
   );
 }
+
