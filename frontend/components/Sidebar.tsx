@@ -27,7 +27,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="p-8 b-1 border-r-1 border-gray-200 h-full">
+    <div className="p-8 b-1 border-r-1 border-gray-200 h-screen">
       <img src="/logo.svg" width="150px" alt="cohera logo" />
       <div className="mt-5">
         {sidebarItems.map(({ name, slug }) => {
