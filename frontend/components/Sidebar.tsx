@@ -42,9 +42,6 @@ export const Sidebar = () => {
           );
         })}
       </div>
-      <div className="py-3">
-        <SignOutButton />
-      </div>
     </div>
   );
 };
