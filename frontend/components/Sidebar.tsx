@@ -1,6 +1,5 @@
 "use client"
 
-import { SignOutButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 type SidebarItem = {
