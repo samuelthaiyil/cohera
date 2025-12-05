@@ -6,6 +6,5 @@ export default defineSchema({
     ownerUserId: v.string(),
     name: v.string(),
     content: v.string(),
-    invitedUserIds: v.array()
-  }),
-});
+    invitedUserIds: v.array(v.string())
+  }),});
